@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+  postgres:
+    image: 'postgres:15'
+    container_name: 'postgres'
+    depends_on:
+      - redis
+    env_file:
+      - .env
+    ports:
+      - "5432:5432"
+    networks:
+      - mynetwork
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  app:
+    build: ./
+    container_name: 'java'
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    restart: on-failure
+    networks:
+      - mynetwork
+
+  redis:
+    image: redis:7.2-rc-alpine
+    restart: on-failure
+    container_name: 'redis'
+    ports:
+      - "6379:6379"
+    networks:
+      - mynetwork
+    volumes:
+      - cache:/data
+    command: redis-server --save 20 1 --loglevel warning
+
+
+networks:
+  mynetwork:
+    driver: bridge
+
+volumes:
+  cache:
+    driver: local
+  db-data:
+    driver: local
