@@ -105,6 +105,7 @@ class UserServiceImplTest {
 
     @Test
     void remittanceMoneyByUserId() {
+
         BigDecimal amount = BigDecimal.valueOf(200.0);
         Long senderId = 1L;
         Long recipientId = 2L;
